@@ -1,0 +1,44 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Title:</strong>
+  <%= @image.title %>
+</p>
+
+<p>
+  <strong>Year:</strong>
+  <%= @image.year %>
+</p>
+
+<p>
+  <strong>Discipline:</strong>
+  <%= @image.discipline %>
+</p>
+
+<p>
+  <strong>Subject matter:</strong>
+  <%= @image.subject_matter %>
+</p>
+
+<p>
+  <strong>Dimensions:</strong>
+  <%= @image.dimensions %>
+</p>
+
+<p>
+  <strong>Keywords:</strong>
+  <%= @image.keywords %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @image.description %>
+</p>
+
+<p>
+  <strong>Upload:</strong>
+  <%= @image.upload %>
+</p>
+
+<%= link_to 'Edit', edit_image_path(@image) %> |
+<%= link_to 'Back', images_path %>
