@@ -74,7 +74,7 @@ namespace :unicorn do
   set :unicorn_config, "#{unicorn_dir}/unicorn.rb"
 
   set :start_unicorn, %{
-    cd #{app_path || '/home/deploy/motorstories/current'}
+    cd #{app_path || '/home/deploy/mikhail_zarovny/current'}
     bundle exec unicorn -c #{unicorn_config} -E production -D
   }
  
