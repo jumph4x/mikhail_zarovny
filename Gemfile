@@ -2,7 +2,10 @@ source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.0.2'
+gem 'mini_magick'
+gem 'carrierwave'
 gem 'foundation-rails'
+gem 'ransack'
 
 group :development, :test do
   # Use sqlite3 as the database for Active Record

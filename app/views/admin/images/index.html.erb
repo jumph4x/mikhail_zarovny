@@ -1,2 +1,19 @@
-<h1>Admin::Images#index</h1>
-<p>Find me in app/views/admin/images/index.html.erb</p>
+<div class="right">
+  <%= link_to 'New piece', new_admin_image_path, class: 'button radius' -%>
+</div>
+
+<h1>Beautiful Art</h1>
+
+<div class="admin-search">
+  <%= search_form_for @q, url: admin_images_path do |f| %>
+    <%= f.label :year_eq %>
+    <%= f.select :year_eq, (1980..Time.now.year).to_a %>
+    <%= f.submit %>
+  <% end %>
+</div>
+
+<ul>
+<% @images.each do |image| %>
+  <li><%= link_to image_tag(image.upload), edit_admin_image_path(image) -%></li>
+<% end %>
+</ul>

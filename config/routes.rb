@@ -1,4 +1,6 @@
 MikhailZarovny::Application.routes.draw do
+  get '/admin', :to => 'admin/images#index', :as => :admin
+
   namespace :admin do
     resources :images
   end

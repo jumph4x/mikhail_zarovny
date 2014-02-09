@@ -12,8 +12,12 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require foundation
-//= require turbolinks
-//= require_tree .
+//= require ./jquery-ui-1.10.4.custom
+// require foundation
+//= require ./color-thief
+//= require ./jquery.tmpl.min
+//= require ./jquery.easing.1.3
+//= require ./jquery.elastislide
+//= require ./gallery
 
-$(function(){ $(document).foundation(); });
+//$(function(){ $(document).foundation(); });
