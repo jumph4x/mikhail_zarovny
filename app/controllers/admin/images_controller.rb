@@ -1,4 +1,5 @@
 class Admin::ImagesController < ApplicationController
+  layout 'admin'
   http_basic_authenticate_with name: "mzarovny", password: "gopagopa"
   before_action :set_image, only: [:show, :edit, :update, :destroy]
 
@@ -10,6 +11,7 @@ class Admin::ImagesController < ApplicationController
 
   # GET /images/1
   def show
+    redirect_to edit_admin_image_path(params[:id])
   end
 
   # GET /images/new

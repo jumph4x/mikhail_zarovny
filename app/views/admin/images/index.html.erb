@@ -2,15 +2,9 @@
   <%= link_to 'New piece', new_admin_image_path, class: 'button radius' -%>
 </div>
 
-<h1>Beautiful Art</h1>
+<h1>Art Gallery Administration</h1>
 
-<div class="admin-search">
-  <%= search_form_for @q, url: admin_images_path do |f| %>
-    <%= f.label :year_eq %>
-    <%= f.select :year_eq, (1980..Time.now.year).to_a %>
-    <%= f.submit %>
-  <% end %>
-</div>
+<%= render 'admin_search' -%>
 
 <ul class="inline-list">
 <% @images.each do |image| %>

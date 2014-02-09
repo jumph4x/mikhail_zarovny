@@ -61,5 +61,6 @@
 
   .row
     .large-6.columns
-      = link_to 'Back', admin_images_path, class: 'button radius alert', onclick: 'history.back(); return false;'
-      = f.submit class: 'button radius'
+      = link_to "&laquo; Back".html_safe, admin_images_path, class: 'button radius', onclick: 'history.back(); return false;'
+      = button_to "&times; Delete".html_safe, admin_images_path(method: :delete), class: 'button radius alert'
+      = f.submit value: "&check; Save".html_safe, class: 'button radius'
