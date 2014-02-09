@@ -223,32 +223,33 @@ $(function() {
 						$esCarousel.elastislide( 'setCurrent', current );
 					}
 					anim	= false;
+
+          var cf = new ColorThief();
+          var img = $(art)[0];
+          if(img != undefined){
+            var dc = cf.getColor(img);
+            var rgb = 'rgb(' + dc.join(',') + ')';
+            $("body").animate({
+              backgroundColor: rgb
+            }, 1000 );
+            $('a,p').animate({color: '#fff'}, 1000)
+          }
 				}).attr( 'src', largesrc );
 
-         resemble(largesrc).onComplete(function(d){
-           var rgb = 'rgb(' + d.red + ',' + d.green + ',' + d.blue + ')';
-           $("body").animate({
-             backgroundColor: rgb
-           }, 100 );
+         //resemble(largesrc).onComplete(function(d){
+         //  var rgb = 'rgb(' + d.red + ',' + d.green + ',' + d.blue + ')';
+         //  $("body").animate({
+         //    backgroundColor: rgb
+         //  }, 100 );
 
-           var t = $('a,p');
+         //  var t = $('a,p');
 
-           if(d.brightness > 128){
-             t.animate({color: '#000'}, 100);
-           }else{
-             t.animate({color: '#fff'}, 100);
-           }
-         });
-        //var cf = new ColorThief();
-        //var source = $(art)[0];
-        //console.log(source);
-        //if(source != undefined){
-        //  var dc = cf.getColor(source);
-        //  var rgb = 'rgb(' + dc.join(',') + ')';
-        //  $("body").animate({
-        //    backgroundColor: rgb
-        //  }, 100 );
-        //}
+         //  if(d.brightness > 128){
+         //    t.animate({color: '#000'}, 100);
+         //  }else{
+         //    t.animate({color: '#fff'}, 100);
+         //  }
+         //});
 			},
 			addItems		= function( $new ) {
 				$esCarousel.find('ul').append($new);
