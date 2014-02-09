@@ -227,29 +227,30 @@ $(function() {
           var cf = new ColorThief();
           var img = $(art)[0];
           if(img != undefined){
-            var dc = cf.getColor(img);
-            var rgb = 'rgb(' + dc.join(',') + ')';
-            $("body").animate({
-              backgroundColor: rgb
+            var bg_c = cf.getColor(img);
+            var fg_color = [255,255,255];
+            var fg_colors = cf.getPalette(img);
+
+            var old_diff = 0;
+            var new_diff = 0;
+            $.each(fg_colors, function(index, v){
+              new_diff = Math.abs((bg_c[0] - v[0]) + (bg_c[1] - v[1]) + (bg_c[2] - v[2]));
+              if (new_diff > old_diff){
+                fg_color = v;
+                old_diff = new_diff;
+              }
+            });
+
+            var bg_rgb = 'rgb(' + bg_c.join(',') + ')';
+            var fg_rgb = 'rgb(' + fg_color.join(',') + ')';
+            $(".bg-color").animate({
+              backgroundColor: bg_rgb
             }, 1000 );
-            $('a,p').animate({color: '#fff'}, 1000)
+
+            $('a,p,ul,label').animate({color: fg_rgb}, 1000)
+            $('.logo svg').animate({fill: fg_rgb}, 1000)
           }
 				}).attr( 'src', largesrc );
-
-         //resemble(largesrc).onComplete(function(d){
-         //  var rgb = 'rgb(' + d.red + ',' + d.green + ',' + d.blue + ')';
-         //  $("body").animate({
-         //    backgroundColor: rgb
-         //  }, 100 );
-
-         //  var t = $('a,p');
-
-         //  if(d.brightness > 128){
-         //    t.animate({color: '#000'}, 100);
-         //  }else{
-         //    t.animate({color: '#fff'}, 100);
-         //  }
-         //});
 			},
 			addItems		= function( $new ) {
 				$esCarousel.find('ul').append($new);

@@ -4,27 +4,28 @@
 
   %ul.medium-type.right.inline-list.right-links
     %li
-      %a{href: '#'} Artworks
+      %a{href: '#', onclick: '$(".nav").toggle({effect: "slide", duration: 100}); return false;'} Artworks
     %li
       %a{href: '&#109;&#x61;&#105;&#108;&#x74;&#x6f;&#58;&#109;&#122;&#97;&#x72;&#x6f;&#x76;&#110;&#x79;&#64;&#103;&#109;&#x61;&#105;&#108;&#x2e;&#x63;&#111;&#109;'} Contact
 
-.nav.bg-color
-  .row
-    .large-4.columns
-      %label Period
-      %ul
-        - collection(YEAR).each do |label, value|
-          %li
-            = link_to label, images_path(image_params.merge(year: value)), class: active(:year, value) 
-    .large-4.columns
-      %label Subject matter
-      %ul
-        - collection(SUBJECT_MATTER).each do |label, value|
-          %li
-            = link_to label, images_path(image_params.merge(subject_matter: value)), class: active(:subject_matter, value) 
-    .large-4.columns
-      %label Technique
-      %ul
-        - collection(DISCIPLINE).each do |label, value|
-          %li
-            = link_to label, images_path(image_params.merge(discipline: value)), class: active(:discipline, value) 
+.abs
+  .nav.bg-color.hide
+    .row
+      .large-4.columns
+        %label Period
+        %ul
+          - collection(YEAR).each do |label, value|
+            %li
+              = link_to label, images_path(image_params.merge(year: value)), class: active(:year, value) 
+      .large-4.columns
+        %label Subject matter
+        %ul
+          - collection(SUBJECT_MATTER).each do |label, value|
+            %li
+              = link_to label, images_path(image_params.merge(subject_matter: value)), class: active(:subject_matter, value) 
+      .large-4.columns
+        %label Technique
+        %ul
+          - collection(DISCIPLINE).each do |label, value|
+            %li
+              = link_to label, images_path(image_params.merge(discipline: value)), class: active(:discipline, value) 

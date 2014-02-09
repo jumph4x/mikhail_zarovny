@@ -13,6 +13,7 @@
 //= require jquery
 //= require jquery_ujs
 //= require ./jquery-ui-1.10.4.custom
+//= require ./jquery.color
 // require foundation
 // require ./resemble
 //= require ./color-thief
@@ -21,4 +22,4 @@
 //= require ./jquery.elastislide
 //= require ./gallery
 
-//$(function(){ $(document).foundation(); });
+jQuery.Color.hook( "fill stroke" );
