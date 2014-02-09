@@ -15,9 +15,22 @@
 
   <body class="admin">
     <div class="container">
-      <a href="/admin"><h1>Gallery Administration</h1></a>
+      <div class="right new-piece">
+        <%= link_to 'New piece', new_admin_image_path, class: 'button radius' -%>
+      </div>
+
+      <a href="/admin"><h1 class="admin-heading">Gallery Administration</h1></a>
+      <% [:notice, :alert, :error].each do |t| %>
+        <% if flash[t] %>
+          <div data-alert class="<%= {notice: 'success', error: 'warning', alert: 'info'}[t] -%> alert-box">
+            <%= flash[t] %>
+            <a href="#" class="close">&times;</a>
+        </div>
+        <% end %>
+      <% end %>
+
       <%= yield %>
-      <%= javascript_include_tag "application" %>
+      <%= javascript_include_tag "admin" %>
     </div>
   </body>
 </html>

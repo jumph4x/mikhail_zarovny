@@ -21,5 +21,7 @@ module MikhailZarovny
     # config.i18n.default_locale = :de
     #
     ActionView::Base.field_error_proc = Proc.new { |html_tag, instance| "<div class=\"error\">#{html_tag}<small>Fix me</small></div>".html_safe }
+    
+    config.assets.precompile << '*.js'
   end
 end

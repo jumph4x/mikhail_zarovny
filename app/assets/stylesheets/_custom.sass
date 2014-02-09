@@ -6,21 +6,20 @@
   background: asset-data-url('admin_bg_canvas.png')
 
 .logo svg,
-  margin-left: -50px
-
-.right-links,
-.logo svg
+  width: 150px
   height: 50px
-  margin: 30px auto !important
+
+.right-links
+  height: 50px
 
 .container
-  padding: 2em
+  padding: 2em 2em
 
 .large-type
   font-size: 2em
 
 .medium-type
-  font-size: 1.5em
+  font-size: 1.25em
 
 ul,ol
   list-style: none
@@ -29,8 +28,27 @@ ul,ol
   margin-left: auto
   margin-right: auto
 
-.rg-image
-  text-align: center
-
 .inline-list > li
   margin-bottom: 1.375rem
+
+.admin-heading
+  margin-bottom: 1.5em
+
+.new-piece
+  margin-top: 0.5em
+
+.actions > div
+  display: inline-block
+
+.alert-box
+  margin-bottom: 3rem !important
+
+img
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.25)
+
+@media only screen and (max-width: 40.063em)
+  .logo svg,
+    width: 100px
+    height: 33px
+  .medium-type
+    font-size: 1em

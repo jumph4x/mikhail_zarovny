@@ -10,6 +10,19 @@
             %li= msg
 
   .row
+    .large-6.columns
+      %label
+        Upload
+        = f.file_field :upload
+    .large-6.columns
+      - if @image.upload
+        %label
+          Preview [once saved]
+          %br
+          = image_tag(@image.upload.thumb.url)
+          = f.hidden_field :upload_cache
+
+  .row
     .large-9.columns
       %label 
         Title
@@ -48,20 +61,7 @@
         = f.text_area :description
 
   .row
-    .large-6.columns
-      %label
-        Upload
-        = f.file_field :upload
-    .large-6.columns
-      - if @image.upload
-        %label
-          Preview
-          %br
-          = image_tag(@image.upload.thumb.url)
-          = f.hidden_field :upload_cache
-
-  .row
-    .large-6.columns
+    .large-6.columns.actions
       = link_to "&laquo; Back".html_safe, admin_images_path, class: 'button radius', onclick: (flash ? '' : 'history.back(); return false;')
       = button_to "&times; Delete".html_safe, admin_images_path(method: :delete), class: 'button radius alert' unless @image.new_record?
-      = f.submit value: "&check; Save".html_safe, class: 'button radius'
+      = f.submit value: "&check; Save".html_safe, class: 'button radius success'

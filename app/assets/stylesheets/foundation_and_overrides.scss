@@ -1187,5 +1187,6 @@ $anchor-font-color-hover: scale-color($body-font-color, $lightness: 25%);
 
 // $include-html-visibility-classes: $include-html-classes;
 
-@import 'custom';
 @import 'foundation';
+@import 'custom';
+@import 'gallery';
