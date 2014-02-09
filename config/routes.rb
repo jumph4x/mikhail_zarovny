@@ -9,7 +9,11 @@ MikhailZarovny::Application.routes.draw do
   # See how all your routes lay out with "rake routes".
 
   # You can have the root of your site routed with "root"
-  root 'images#index', :as => 'images'
+
+  root 'images#index'
+  get ':subject_matter/:year/:discipline' => 'images#index', :as => :images_all
+  get ':subject_matter/:year' => 'images#index', :as => :images_smy
+  get ':subject_matter' => 'images#index', :as => :images_sm
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
