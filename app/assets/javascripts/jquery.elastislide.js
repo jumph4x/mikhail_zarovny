@@ -1,467 +1,883 @@
-(function( window, $, undefined ) {
-	
-	// http://www.netcu.de/jquery-touchwipe-iphone-ipad-library
-	$.fn.touchwipe 				= function(settings) {
-		
-		var config = {
-			min_move_x: 20,
-			min_move_y: 20,
-			wipeLeft: function() { },
-			wipeRight: function() { },
-			wipeUp: function() { },
-			wipeDown: function() { },
-			preventDefaultEvents: true
-		};
-     
-		if (settings) $.extend(config, settings);
- 
-		this.each(function() {
-			var startX;
-			var startY;
-			var isMoving = false;
+/**
+ * jquery.elastislide.js v1.1.0
+ * http://www.codrops.com
+ *
+ * Licensed under the MIT license.
+ * http://www.opensource.org/licenses/mit-license.php
+ * 
+ * Copyright 2012, Codrops
+ * http://www.codrops.com
+ */
 
-			function cancelTouch() {
-				this.removeEventListener('touchmove', onTouchMove);
-				startX = null;
-				isMoving = false;
-			}	
-		 
-			function onTouchMove(e) {
-				if(config.preventDefaultEvents) {
-					e.preventDefault();
-				}
-				if(isMoving) {
-					var x = e.touches[0].pageX;
-					var y = e.touches[0].pageY;
-					var dx = startX - x;
-					var dy = startY - y;
-					if(Math.abs(dx) >= config.min_move_x) {
-						cancelTouch();
-						if(dx > 0) {
-							config.wipeLeft();
-						}
-						else {
-							config.wipeRight();
-						}
-					}
-					else if(Math.abs(dy) >= config.min_move_y) {
-						cancelTouch();
-						if(dy > 0) {
-							config.wipeDown();
-						}
-						else {
-							config.wipeUp();
-						}
-					}
-				}
-			}
-		 
-			function onTouchStart(e)
-			{
-				if (e.touches.length == 1) {
-					startX = e.touches[0].pageX;
-					startY = e.touches[0].pageY;
-					isMoving = true;
-					this.addEventListener('touchmove', onTouchMove, false);
-				}
-			}    	 
-			if ('ontouchstart' in document.documentElement) {
-				this.addEventListener('touchstart', onTouchStart, false);
-			}
-		});
- 
-		return this;
-	};
+;( function( $, window, undefined ) {
 	
-	$.elastislide 				= function( options, element ) {
-		this.$el	= $( element );
+	'use strict';
+
+	/*
+	* debouncedresize: special jQuery event that happens once after a window resize
+	*
+	* latest version and complete README available on Github:
+	* https://github.com/louisremi/jquery-smartresize/blob/master/jquery.debouncedresize.js
+	*
+	* Copyright 2011 @louis_remi
+	* Licensed under the MIT license.
+	*/
+	
+	var $event = $.event,
+	$special,
+	resizeTimeout;
+
+	$special = $event.special.debouncedresize = {
+		setup: function() {
+			$( this ).on( "resize", $special.handler );
+		},
+		teardown: function() {
+			$( this ).off( "resize", $special.handler );
+		},
+		handler: function( event, execAsap ) {
+			// Save the context
+			var context = this,
+				args = arguments,
+				dispatch = function() {
+					// set correct event type
+					event.type = "debouncedresize";
+					$event.dispatch.apply( context, args );
+				};
+
+			if ( resizeTimeout ) {
+				clearTimeout( resizeTimeout );
+			}
+
+			execAsap ?
+				dispatch() :
+				resizeTimeout = setTimeout( dispatch, $special.threshold );
+		},
+		threshold: 150
+	};
+
+	// ======================= imagesLoaded Plugin ===============================
+	// https://github.com/desandro/imagesloaded
+
+	// $('#my-container').imagesLoaded(myFunction)
+	// execute a callback when all images have loaded.
+	// needed because .load() doesn't work on cached images
+
+	// callback function gets image collection as argument
+	//  this is the container
+
+	// original: mit license. paul irish. 2010.
+	// contributors: Oren Solomianik, David DeSandro, Yiannis Chatzikonstantinou
+
+	// blank image data-uri bypasses webkit log warning (thx doug jones)
+	var BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+
+	$.fn.imagesLoaded = function( callback ) {
+		var $this = this,
+			deferred = $.isFunction($.Deferred) ? $.Deferred() : 0,
+			hasNotify = $.isFunction(deferred.notify),
+			$images = $this.find('img').add( $this.filter('img') ),
+			loaded = [],
+			proper = [],
+			broken = [];
+
+		// Register deferred callbacks
+		if ($.isPlainObject(callback)) {
+			$.each(callback, function (key, value) {
+				if (key === 'callback') {
+					callback = value;
+				} else if (deferred) {
+					deferred[key](value);
+				}
+			});
+		}
+
+		function doneLoading() {
+			var $proper = $(proper),
+				$broken = $(broken);
+
+			if ( deferred ) {
+				if ( broken.length ) {
+					deferred.reject( $images, $proper, $broken );
+				} else {
+					deferred.resolve( $images );
+				}
+			}
+
+			if ( $.isFunction( callback ) ) {
+				callback.call( $this, $images, $proper, $broken );
+			}
+		}
+
+		function imgLoaded( img, isBroken ) {
+			// don't proceed if BLANK image, or image is already loaded
+			if ( img.src === BLANK || $.inArray( img, loaded ) !== -1 ) {
+				return;
+			}
+
+			// store element in loaded images array
+			loaded.push( img );
+
+			// keep track of broken and properly loaded images
+			if ( isBroken ) {
+				broken.push( img );
+			} else {
+				proper.push( img );
+			}
+
+			// cache image and its state for future calls
+			$.data( img, 'imagesLoaded', { isBroken: isBroken, src: img.src } );
+
+			// trigger deferred progress method if present
+			if ( hasNotify ) {
+				deferred.notifyWith( $(img), [ isBroken, $images, $(proper), $(broken) ] );
+			}
+
+			// call doneLoading and clean listeners if all images are loaded
+			if ( $images.length === loaded.length ){
+				setTimeout( doneLoading );
+				$images.unbind( '.imagesLoaded' );
+			}
+		}
+
+		// if no images, trigger immediately
+		if ( !$images.length ) {
+			doneLoading();
+		} else {
+			$images.bind( 'load.imagesLoaded error.imagesLoaded', function( event ){
+				// trigger imgLoaded
+				imgLoaded( event.target, event.type === 'error' );
+			}).each( function( i, el ) {
+				var src = el.src;
+
+				// find out if this image has been already checked for status
+				// if it was, and src has not changed, call imgLoaded on it
+				var cached = $.data( el, 'imagesLoaded' );
+				if ( cached && cached.src === src ) {
+					imgLoaded( el, cached.isBroken );
+					return;
+				}
+
+				// if complete is true and browser supports natural sizes, try
+				// to check for image status manually
+				if ( el.complete && el.naturalWidth !== undefined ) {
+					imgLoaded( el, el.naturalWidth === 0 || el.naturalHeight === 0 );
+					return;
+				}
+
+				// cached images don't fire load sometimes, so we reset src, but only when
+				// dealing with IE, or image is complete (loaded) and failed manual check
+				// webkit hack from http://groups.google.com/group/jquery-dev/browse_thread/thread/eee6ab7b2da50e1f
+				if ( el.readyState || el.complete ) {
+					el.src = BLANK;
+					el.src = src;
+				}
+			});
+		}
+
+		return deferred ? deferred.promise( $this ) : $this;
+	};
+
+	// global
+	var $window = $( window ),
+		Modernizr = window.Modernizr;
+
+	$.Elastislide = function( options, element ) {
+		
+		this.$el = $( element );
 		this._init( options );
+		
 	};
-	
-	$.elastislide.defaults 		= {
-		speed		: 450,	// animation speed
-		easing		: '',	// animation easing effect
-		imageW		: 190,	// the images width
-		margin		: 3,	// image margin right
-		border		: 2,	// image border
-		minItems	: 1,	// the minimum number of items to show. 
-							// when we resize the window, this will make sure minItems are always shown 
-							// (unless of course minItems is higher than the total number of elements)
-		current		: 0,	// index of the current item
-							// when we resize the window, the carousel will make sure this item is visible 
-		onClick		: function() { return false; } // click item callback
-    };
-	
-	$.elastislide.prototype 	= {
-		_init 				: function( options ) {
+
+	$.Elastislide.defaults = {
+		// orientation 'horizontal' || 'vertical'
+		orientation : 'horizontal',
+		// sliding speed
+		speed : 500,
+		// sliding easing
+		easing : 'ease-in-out',
+		// the minimum number of items to show. 
+		// when we resize the window, this will make sure minItems are always shown 
+		// (unless of course minItems is higher than the total number of elements)
+		minItems : 3,
+		// optionally specify a selector rather than using the img element to read the image sizes
+		// (we only use the first matching element within our items)
+		imgSizeItemSelector : 'img',
+		// index of the current item (left most item of the carousel)
+		start : 0,
+		// autoslide feature: true || false
+		// automatically loops through the carousel (after hitting the end of the list goes back to front)
+		// disabled by default
+		autoSlide: false,
+		// autoslide delay time, specifies time interval between autoslide steps (in milliseconds)
+		// 3000ms by default
+		delayTime: 3000,
+		// click item callback
+		onClick : function( el, position, evt ) { return false; },
+		onReady : function() { return false; },
+		onBeforeSlide : function() { return false; },
+		onAfterSlide : function() { return false; }
+	};
+
+	$.Elastislide.prototype = {
+
+		_init : function( options ) {
 			
-			this.options 		= $.extend( true, {}, $.elastislide.defaults, options );
+			// options
+			this.options = $.extend( true, {}, $.Elastislide.defaults, options );
+
+			// https://github.com/twitter/bootstrap/issues/2870
+			var self = this,
+				transEndEventNames = {
+					'WebkitTransition' : 'webkitTransitionEnd',
+					'MozTransition' : 'transitionend',
+					'OTransition' : 'oTransitionEnd',
+					'msTransition' : 'MSTransitionEnd',
+					'transition' : 'transitionend'
+				};
 			
-			// <ul>
-			this.$slider		= this.$el.find('ul');
+			this.transEndEventName = transEndEventNames[ Modernizr.prefixed( 'transition' ) ];
 			
-			// <li>
-			this.$items			= this.$slider.children('li');
-			
-			// total number of elements / images
-			this.itemsCount		= this.$items.length;
-			
-			// cache the <ul>'s parent, since we will eventually need to recalculate its width on window resize
-			this.$esCarousel	= this.$slider.parent();
-			
-			// validate options
-			this._validateOptions();
-			
-			// set sizes and initialize some vars...
-			this._configure();
-			
-			// add navigation buttons
-			this._addControls();
-			
-			// initialize the events
-			this._initEvents();
-			
-			// show the <ul>
-			this.$slider.show();
-			
-			// slide to current's position
-			this._slideToCurrent( false );
-			
-		},
-		_validateOptions	: function() {
-		
-			if( this.options.speed < 0 )
-				this.options.speed = 450;
-			if( this.options.margin < 0 )
-				this.options.margin = 4;
-			if( this.options.border < 0 )
-				this.options.border = 1;
-			if( this.options.minItems < 1 || this.options.minItems > this.itemsCount )
-				this.options.minItems = 1;
-			if( this.options.current > this.itemsCount - 1 )
-				this.options.current = 0;
-				
-		},
-		_configure			: function() {
-			
+			// suport for css transforms and css transitions
+			this.support = Modernizr.csstransitions && Modernizr.csstransforms;
+
 			// current item's index
-			this.current		= this.options.current;
-			
-			// the ul's parent's (div.es-carousel) width is the "visible" width
-			this.visibleWidth	= this.$esCarousel.width();
-			
-			// test to see if we need to initially resize the items
-			if( this.visibleWidth < this.options.minItems * ( this.options.imageW + 2 * this.options.border ) + ( this.options.minItems - 1 ) * this.options.margin ) {
-				this._setDim( ( this.visibleWidth - ( this.options.minItems - 1 ) * this.options.margin ) / this.options.minItems );
-				this._setCurrentValues();
-				// how many items fit with the current width
-				this.fitCount	= this.options.minItems;
-			}
-			else {
-				this._setDim();
-				this._setCurrentValues();
-			}
-			
-			// set the <ul> width
-			this.$slider.css({
-				width	: this.sliderW
-			});
-			
-		},
-		_setDim				: function( elW ) {
-			
-			// <li> style
-			this.$items.css({
-				marginRight	: this.options.margin,
-				width		: ( elW ) ? elW : this.options.imageW + 2 * this.options.border
-			}).children('a').css({ // <a> style
-				borderWidth		: this.options.border
-			});
-			
-		},
-		_setCurrentValues	: function() {
-			
-			// the total space occupied by one item
-			this.itemW			= this.$items.outerWidth(true);
-			
-			// total width of the slider / <ul>
-			// this will eventually change on window resize
-			this.sliderW		= this.itemW * this.itemsCount;
-			
-			// the ul parent's (div.es-carousel) width is the "visible" width
-			this.visibleWidth	= this.$esCarousel.width();
-			
-			// how many items fit with the current width
-			this.fitCount		= Math.floor( this.visibleWidth / this.itemW );
-			
-		},
-		_addControls		: function() {
-			
-			this.$navNext	= $('<span class="es-nav-next">Next</span>');
-			this.$navPrev	= $('<span class="es-nav-prev">Previous</span>');
-			$('<div class="es-nav"/>')
-			.append( this.$navPrev )
-			.append( this.$navNext )
-			.appendTo( this.$el );
-			
-			//this._toggleControls();
-				
-		},
-		_toggleControls		: function( dir, status ) {
-			
-			// show / hide navigation buttons
-			if( dir && status ) {
-				if( status === 1 )
-					( dir === 'right' ) ? this.$navNext.show() : this.$navPrev.show();
-				else
-					( dir === 'right' ) ? this.$navNext.hide() : this.$navPrev.hide();
-			}
-			else if( this.current === this.itemsCount - 1 || this.fitCount >= this.itemsCount )
-					this.$navNext.hide();
-			
-		},
-		_initEvents			: function() {
-			
-			var instance	= this;
-			
-			// window resize
-			$(window).on('resize.elastislide', function( event ) {
-				
-				instance._reload();
-				
-				// slide to the current element
-				clearTimeout( instance.resetTimeout );
-				instance.resetTimeout	= setTimeout(function() {
-					instance._slideToCurrent();
-				}, 200);
-				
-			});
-			
-			// navigation buttons events
-			this.$navNext.on('click.elastislide', function( event ) {
-				instance._slide('right');
-			});
-			
-			this.$navPrev.on('click.elastislide', function( event ) {
-				instance._slide('left');
-			});
-			
-			// item click event
-			this.$slider.on('click.elastislide', 'li', function( event ) {
-				instance.options.onClick( $(this) );
+			this.current = this.options.start;
+
+			// control if it's sliding
+			this.isSliding = false;
+
+			this.$items = this.$el.children( 'li' );
+			// total number of items
+			this.itemsCount = this.$items.length;
+			if( this.itemsCount === 0 ) {
+
 				return false;
-			});
-			
-			// touch events
-			instance.$slider.touchwipe({
-				wipeLeft			: function() {
-					instance._slide('right');
-				},
-				wipeRight			: function() {
-					instance._slide('left');
-				}
-			});
-			
-		},
-		reload				: function( callback ) {
-			this._reload();
-			if ( callback ) callback.call();
-		
-		},
-		_reload				: function() {
-			
-			var instance	= this;
-			
-			// set values again
-			instance._setCurrentValues();
-			
-			// need to resize items
-			if( instance.visibleWidth < instance.options.minItems * ( instance.options.imageW + 2 * instance.options.border ) + ( instance.options.minItems - 1 ) * instance.options.margin ) {
-				instance._setDim( ( instance.visibleWidth - ( instance.options.minItems - 1 ) * instance.options.margin ) / instance.options.minItems );
-				instance._setCurrentValues();
-				instance.fitCount	= instance.options.minItems;
-			}	
-			else{
-				instance._setDim();
-				instance._setCurrentValues();
+
 			}
+			this._validate();
+			// remove white space
+			this.$items.detach();
+			this.$el.empty();
+			this.$el.append( this.$items );
+
+			// main wrapper
+			this.$el.wrap( '<div class="elastislide-wrapper elastislide-loading elastislide-' + this.options.orientation + '"></div>' );
+
+			// check if we applied a transition to the <ul>
+			this.hasTransition = false;
 			
-			instance.$slider.css({
-				width	: instance.sliderW + 10 // TODO: +10px seems to solve a firefox "bug" :S
-			});
-			
-		},
-		_slide				: function( dir, val, anim, callback ) {
-			
-			// if animating return
-			//if( this.$slider.is(':animated') )
-				//return false;
-			
-			// current margin left
-			var ml		= parseFloat( this.$slider.css('margin-left') );
-			
-			// val is just passed when we want an exact value for the margin left (used in the _slideToCurrent function)
-			if( val === undefined ) {
-			
-				// how much to slide?
-				var amount	= this.fitCount * this.itemW, val;
+			// add transition for the <ul>
+			this.hasTransitionTimeout = setTimeout( function() {
 				
-				if( amount < 0 ) return false;
+				self._addTransition();
+
+			}, 100 );
+
+			// preload the images
+			
+			this.$el.imagesLoaded( function() {
+
+				self.$el.show();
+
+				self._layout();
+				self._configure();
 				
-				// make sure not to leave a space between the last item / first item and the end / beggining of the slider available width
-				if( dir === 'right' && this.sliderW - ( Math.abs( ml ) + amount ) < this.visibleWidth ) {
-					amount	= this.sliderW - ( Math.abs( ml ) + this.visibleWidth ) - this.options.margin; // decrease the margin left
-					// show / hide navigation buttons
-					this._toggleControls( 'right', -1 );
-					this._toggleControls( 'left', 1 );
-				}
-				else if( dir === 'left' && Math.abs( ml ) - amount < 0 ) {				
-					amount	= Math.abs( ml );
-					// show / hide navigation buttons
-					this._toggleControls( 'left', -1 );
-					this._toggleControls( 'right', 1 );
+				if( self.hasTransition ) {
+
+					// slide to current's position
+					self._removeTransition();
+					self._slideToItem( self.current );
+
+					self.$el.on( self.transEndEventName, function() {
+
+						self.$el.off( self.transEndEventName );
+						self._setWrapperSize();
+						// add transition for the <ul>
+						self._addTransition();
+						self._initEvents();
+
+					} );
+
 				}
 				else {
-					var fml; // future margin left
-					( dir === 'right' ) 
-						? fml = Math.abs( ml ) + this.options.margin + Math.abs( amount ) 
-						: fml = Math.abs( ml ) - this.options.margin - Math.abs( amount );
-					
-					// show / hide navigation buttons
-					if( fml > 0 )
-						this._toggleControls( 'left', 1 );
-					else	
-						this._toggleControls( 'left', -1 );
-					
-					if( fml < this.sliderW - this.visibleWidth )
-						this._toggleControls( 'right', 1 );
-					else	
-						this._toggleControls( 'right', -1 );
-						
+
+					clearTimeout( self.hasTransitionTimeout );
+					self._setWrapperSize();
+					self._initEvents();
+					// slide to current's position
+					self._slideToItem( self.current );
+					setTimeout( function() { self._addTransition(); }, 25 );
+
 				}
+
+				self.options.onReady();
+
+			} );
+
+		},
+		_validate : function() {
+
+
+  			if( this.options.minItems instanceof Function ) {
+  		  
+  		  		this._minItemsFn = this.options.minItems;
+  		  		this.options.minItems = this.options.minItems( document.documentElement.clientWidth );
+  		
+  			}
+
+
+
+			if( this.options.speed < 0 ) {
+
+				this.options.speed = 500;
+
+			}
+			if( this.options.minItems < 1 || this.options.minItems > this.itemsCount ) {
+
+				this.options.minItems = 1;
+
+			}
+			if( this.options.start < 0 || this.options.start > this.itemsCount - 1 ) {
+
+				this.options.start = 0;
+
+			}
+			if( this.options.orientation != 'horizontal' && this.options.orientation != 'vertical' ) {
+
+				this.options.orientation = 'horizontal';
+
+			}
 				
-				( dir === 'right' ) ? val = '-=' + amount : val = '+=' + amount
+		},
+		_layout : function() {
+
+			this.$el.wrap( '<div class="elastislide-carousel"></div>' );
+
+			this.$carousel = this.$el.parent();
+			this.$wrapper = this.$carousel.parent().removeClass( 'elastislide-loading' );
+
+			// save original image sizes
+			var $img = this.$items.find( this.options.imgSizeItemSelector ).first();
+			this.imgSize = { width : $img.outerWidth( true ), height : $img.outerHeight( true ) };
+
+			this._setItemsSize();
+			this.options.orientation === 'horizontal' ? this.$el.css( 'max-height', this.imgSize.height ) : this.$el.css( 'height', this.options.minItems * this.imgSize.height );
+
+			// add the controls
+			this._addControls();
+
+		},
+		_addTransition : function() {
+
+			if( this.support ) {
+
+				this.$el.css( 'transition', 'all ' + this.options.speed + 'ms ' + this.options.easing );
 				
+			}
+			this.hasTransition = true;
+
+		},
+		_removeTransition : function() {
+
+			if( this.support ) {
+
+				this.$el.css( 'transition', 'all 0s' );
+
+			}
+			this.hasTransition = false;
+			
+		},
+		_addControls : function() {
+
+			var self = this;
+
+			// add navigation elements
+			this.$navigation = $( '<nav><span class="elastislide-prev">Previous</span><span class="elastislide-next">Next</span></nav>' )
+				.appendTo( this.$wrapper );
+
+
+			this.$navPrev = this.$navigation.find( 'span.elastislide-prev' ).on( 'mousedown.elastislide', function( event ) {
+
+				self._slide( 'prev' );
+				return false;
+
+			} );
+
+			this.$navNext = this.$navigation.find( 'span.elastislide-next' ).on( 'mousedown.elastislide', function( event ) {
+
+				self._slide( 'next' );
+				return false;
+
+			} );
+
+		},
+		_setItemsSize : function() {
+
+			// width for the items (%)
+			var w = this.options.orientation === 'horizontal' ? ( Math.floor( this.$carousel.width() / this.options.minItems ) * 100 ) / this.$carousel.width() : 100;
+			
+			this.$items.css( {
+				'width' : w + '%',
+				'max-width' : this.imgSize.width,
+				'max-height' : this.imgSize.height
+			} );
+
+			if( this.options.orientation === 'vertical' ) {
+			
+				this.$wrapper.css( 'max-width', this.imgSize.width + parseInt( this.$wrapper.css( 'padding-left' ) ) + parseInt( this.$wrapper.css( 'padding-right' ) ) );
+			
+			}
+
+		},
+		_setWrapperSize : function() {
+
+			if( this.options.orientation === 'vertical' ) {
+
+				this.$wrapper.css( {
+					'height' : this.options.minItems * this.imgSize.height + parseInt( this.$wrapper.css( 'padding-top' ) ) + parseInt( this.$wrapper.css( 'padding-bottom' ) )
+				} );
+
+			}
+
+		},
+		_configure : function() {
+
+			// check how many items fit in the carousel (visible area -> this.$carousel.width() )
+			this.fitCount = this.options.orientation === 'horizontal' ? 
+								this.$carousel.width() < this.options.minItems * this.imgSize.width ? this.options.minItems : Math.floor( this.$carousel.width() / this.imgSize.width ) :
+								this.$carousel.height() < this.options.minItems * this.imgSize.height ? this.options.minItems : Math.floor( this.$carousel.height() / this.imgSize.height );
+
+		},
+		_initEvents : function() {
+			
+			var self = this;
+			//autoslide. To enablethis, set "var autoSlide" to "true" above.
+			if( this.options.autoSlide ) {
+				var translation = 0;
+				// width/height of an item ( <li> )
+				var itemSpace = this.options.orientation === 'horizontal' ? this.$items.outerWidth( true ) : this.$items.outerHeight( true );
+				// total width/height of the <ul>
+				var totalSpace = this.itemsCount * itemSpace;
+				// visible width/height
+				var visibleSpace = this.options.orientation === 'horizontal' ? this.$carousel.width() : this.$carousel.height();
+				window.setInterval(function(){
+				    //test if we should go to next slide or return to first slide
+				    if(totalSpace > translation + visibleSpace)
+				    {
+				        self._slide('next');
+				        translation += visibleSpace;
+				    }
+				    else
+				    {
+				        self._slideTo(0);
+				        translation = 0;
+				    }
+				}, this.options.delayTime);
+			}
+			
+			$window.on( 'debouncedresize.elastislide', function() {
+
+				if( self._minItemsFn ) {
+				  self.options.minItems = self._minItemsFn( document.documentElement.clientWidth );
+				}
+
+
+				self._setItemsSize();
+				self._configure();
+				self._slideToItem( self.current );
+
+			} );
+
+			this.$el.on( this.transEndEventName, function() {
+
+				self._onEndTransition();
+
+			} );
+
+			if( this.options.orientation === 'horizontal' ) {
+
+				this.$el.on( {
+					swipeleft : function() {
+
+						self._slide( 'next' );
+					
+					},
+					swiperight : function() {
+
+						self._slide( 'prev' );
+					
+					}
+				} );
+
 			}
 			else {
-				var fml		= Math.abs( val ); // future margin left
+
+				this.$el.on( {
+					swipeup : function() {
+
+						self._slide( 'next' );
+					
+					},
+					swipedown : function() {
+
+						self._slide( 'prev' );
+					
+					}
+				} );
+
+			}
+
+			// item click event
+			this.$el.on( 'click.elastislide', 'li', function( event ) {
+
+				var $item = $( this );
+
+				self.options.onClick( $item, $item.index(), event );
 				
-				if( Math.max( this.sliderW, this.visibleWidth ) - fml < this.visibleWidth ) {
-					val	= - ( Math.max( this.sliderW, this.visibleWidth ) - this.visibleWidth );
-					if( val !== 0 )
-						val += this.options.margin;	// decrease the margin left if not on the first position
-						
+			});
+
+		},
+		_destroy : function( callback ) {
+			
+			this.$el.off( this.transEndEventName ).off( 'swipeleft swiperight swipeup swipedown .elastislide' );
+			$window.off( '.elastislide' );
+			
+			this.$el.css( {
+				'max-height' : 'none',
+				'transition' : 'none'
+			} ).unwrap( this.$carousel ).unwrap( this.$wrapper );
+
+			this.$items.css( {
+				'width' : 'auto',
+				'max-width' : 'none',
+				'max-height' : 'none'
+			} );
+
+			this.$navigation.remove();
+			this.$wrapper.remove();
+
+			if( callback ) {
+
+				callback.call();
+
+			}
+
+		},
+		_toggleControls : function( dir, display ) {
+
+			if( display ) {
+
+				( dir === 'next' ) ? this.$navNext.show() : this.$navPrev.show();
+
+			}
+			else {
+
+				( dir === 'next' ) ? this.$navNext.hide() : this.$navPrev.hide();
+
+			}
+			
+		},
+		_slide : function( dir, tvalue ) {
+
+			if( this.isSliding ) {
+
+				return false;
+
+			}
+			
+			this.options.onBeforeSlide();
+
+			this.isSliding = true;
+
+			var self = this,
+				translation = this.translation || 0,
+				// width/height of an item ( <li> )
+				itemSpace = this.options.orientation === 'horizontal' ? this.$items.outerWidth( true ) : this.$items.outerHeight( true ),
+				// total width/height of the <ul>
+				totalSpace = this.itemsCount * itemSpace,
+				// visible width/height
+				visibleSpace = this.options.orientation === 'horizontal' ? this.$carousel.width() : this.$carousel.height();
+			
+			if( tvalue === undefined ) {
+				
+				var amount = this.fitCount * itemSpace;
+
+				if( amount < 0 ) {
+
+					return false;
+
+				}
+
+				if( dir === 'next' && totalSpace - ( Math.abs( translation ) + amount ) < visibleSpace ) {
+
+					amount = totalSpace - ( Math.abs( translation ) + visibleSpace );
+
 					// show / hide navigation buttons
-					this._toggleControls( 'right', -1 );
-					fml	= Math.abs( val );
+					this._toggleControls( 'next', false );
+					this._toggleControls( 'prev', true );
+
+				}
+				else if( dir === 'prev' && Math.abs( translation ) - amount < 0 ) {
+
+					amount = Math.abs( translation );
+
+					// show / hide navigation buttons
+					this._toggleControls( 'next', true );
+					this._toggleControls( 'prev', false );
+
+				}
+				else {
+					
+					// future translation value
+					var ftv = dir === 'next' ? Math.abs( translation ) + Math.abs( amount ) : Math.abs( translation ) - Math.abs( amount );
+					
+					// show / hide navigation buttons
+					ftv > 0 ? this._toggleControls( 'prev', true ) : this._toggleControls( 'prev', false );
+					ftv < totalSpace - visibleSpace ? this._toggleControls( 'next', true ) : this._toggleControls( 'next', false );
+						
 				}
 				
-				// show / hide navigation buttons
-				if( fml > 0 )
-					this._toggleControls( 'left', 1 );
-				else
-					this._toggleControls( 'left', -1 );
+				tvalue = dir === 'next' ? translation - amount : translation + amount;
+
+			}
+			else {
+
+				var amount = Math.abs( tvalue );
+
+				if( Math.max( totalSpace, visibleSpace ) - amount < visibleSpace ) {
+
+					tvalue	= - ( Math.max( totalSpace, visibleSpace ) - visibleSpace );
 				
-				if( Math.max( this.sliderW, this.visibleWidth ) - this.visibleWidth > fml + this.options.margin )	
-					this._toggleControls( 'right', 1 );
-				else
-					this._toggleControls( 'right', -1 );
-					
+				}
+
+				// show / hide navigation buttons
+				amount > 0 ? this._toggleControls( 'prev', true ) : this._toggleControls( 'prev', false );
+				Math.max( totalSpace, visibleSpace ) - visibleSpace > amount ? this._toggleControls( 'next', true ) : this._toggleControls( 'next', false );
+
 			}
 			
-			$.fn.applyStyle = ( anim === undefined ) ? $.fn.animate : $.fn.css;
+			this.translation = tvalue;
+
+			if( translation === tvalue ) {
+				
+				this._onEndTransition();
+				return false;
+
+			}
+
+			if( this.support ) {
 			
-			var sliderCSS	= { marginLeft : val };
+		                if (this.options.orientation === 'horizontal') {
+		                    this.$el.css( '-webkit-transform', 'translateX(' + tvalue + 'px)' );
+		                    this.$el.css( '-o-transform', 'translateX(' + tvalue + 'px)' );
+		                    this.$el.css( '-ms-transform', 'translateX(' + tvalue + 'px)' );
+		                    this.$el.css( '-moz-transform', 'translateX(' + tvalue + 'px)' );
+		                    this.$el.css( 'transform', 'translateX(' + tvalue + 'px)' );
+		                } else {
+		                    this.$el.css( '-webkit-transform', 'translateY(' + tvalue + 'px)' );
+		                    this.$el.css( '-o-transform', 'translateY(' + tvalue + 'px)' );
+		                    this.$el.css( '-ms-transform', 'translateY(' + tvalue + 'px)' );
+		                    this.$el.css( '-moz-transform', 'translateY(' + tvalue + 'px)' );
+		                    this.$el.css( 'transform', 'translateY(' + tvalue + 'px)' );
+		                }
+
+			}
+			else {
+
+				$.fn.applyStyle = this.hasTransition ? $.fn.animate : $.fn.css;
+				var styleCSS = this.options.orientation === 'horizontal' ? { left : tvalue } : { top : tvalue };
+				
+				this.$el.stop().applyStyle( styleCSS, $.extend( true, [], { duration : this.options.speed, complete : function() {
+
+					self._onEndTransition();
+					
+				} } ) );
+
+			}
 			
-			var instance	= this;
-			
-			this.$slider.stop().applyStyle( sliderCSS, $.extend( true, [], { duration : this.options.speed, easing : this.options.easing, complete : function() {
-				if( callback ) callback.call();
-			} } ) );
-			
+			if( !this.hasTransition ) {
+
+				this._onEndTransition();
+
+			}
+
 		},
-		_slideToCurrent		: function( anim ) {
+		_onEndTransition : function() {
+
+			this.isSliding = false;
+			this.options.onAfterSlide();
+
+		},
+		_slideTo : function( pos ) {
+
+			var pos = pos || this.current,
+				translation = Math.abs( this.translation ) || 0,
+				itemSpace = this.options.orientation === 'horizontal' ? this.$items.outerWidth( true ) : this.$items.outerHeight( true ),
+				posR = translation + this.$carousel.width(),
+				ftv = Math.abs( pos * itemSpace );
+
+			if( ftv + itemSpace > posR || ftv < translation ) {
+
+				this._slideToItem( pos );
 			
+			}
+
+		},
+		_slideToItem : function( pos ) {
+
 			// how much to slide?
-			var amount	= this.current * this.itemW;
-			this._slide('', -amount, anim );
+			var amount	= this.options.orientation === 'horizontal' ? pos * this.$items.outerWidth( true ) : pos * this.$items.outerHeight( true );
+			this._slide( '', -amount );
 			
 		},
-		add					: function( $newelems, callback ) {
+		// public method: adds new items to the carousel
+		/*
+		
+		how to use:
+		var carouselEl = $( '#carousel' ),
+			carousel = carouselEl.elastislide();
+		...
+		
+		// append or prepend new items:
+		carouselEl.prepend('<li><a href="#"><img src="images/large/2.jpg" alt="image02" /></a></li>');
+
+		// call the add method:
+		es.add();
+		
+		*/
+		add : function( callback ) {
+			
+			var self = this,
+				oldcurrent = this.current,
+				$currentItem = this.$items.eq( this.current );
 			
 			// adds new items to the carousel
-			this.$items 		= this.$items.add( $newelems );
-			this.itemsCount		= this.$items.length;
-			this._setDim();
-			this._setCurrentValues();
-			this.$slider.css({
-				width	: this.sliderW
-			});
-			this._slideToCurrent();
+			this.$items = this.$el.children( 'li' );
+			this.itemsCount = this.$items.length;
+			this.current = $currentItem.index();
+			this._setItemsSize();
+			this._configure();
+			this._removeTransition();
+			oldcurrent < this.current ? this._slideToItem( this.current ) : this._slide( 'next', this.translation );
+			setTimeout( function() { self._addTransition(); }, 25 );
 			
-			if ( callback ) callback.call( $newelems );
-			
-		},
-		setCurrent			: function( idx, callback ) {
-			
-			this.current = idx;
-			
-			var ml		= Math.abs( parseFloat( this.$slider.css('margin-left') ) ),
-				posR	= ml + this.visibleWidth,
-				fml		= Math.abs( this.current * this.itemW );
-			
-			if( fml + this.itemW > posR || fml < ml ) {
-				this._slideToCurrent();
+			if ( callback ) {
+
+				callback.call();
+
 			}
 			
-			if ( callback ) callback.call();
-			
 		},
-		destroy				: function( callback ) {
+		// public method: sets a new element as the current. slides to that position
+		setCurrent : function( idx, callback ) {
 			
-			this._destroy( callback );
-			
-		},
-		_destroy 			: function( callback ) {
-			this.$el.off('.elastislide').removeData('elastislide');
-			$(window).off('.elastislide');
-			if ( callback ) callback.call();
-		}
-	};
-	
-	var logError 				= function( message ) {
-		if ( this.console ) {
-			console.error( message );
-		}
-	};
-	
-	$.fn.elastislide 				= function( options ) {
-		if ( typeof options === 'string' ) {
-			var args = Array.prototype.slice.call( arguments, 1 );
+			this.current = idx;
 
+			this._slideTo();
+			
+			if ( callback ) {
+
+				callback.call();
+
+			}
+			
+		},
+		// public method: slides to the next set of items
+		next : function() {
+
+			this._slide( 'next' );
+
+		},
+		// public method: slides to the previous set of items
+		previous : function() {
+
+			this._slide( 'prev' );
+
+		},
+		// public method: slides to the first item
+		slideStart : function() {
+
+			this._slideTo( 0 );
+
+		},
+		// public method: slides to the last item
+		slideEnd : function() {
+
+			this._slideTo( this.itemsCount - 1 );
+
+		},
+		// public method: destroys the elastislide instance
+		destroy : function( callback ) {
+
+			this._destroy( callback );
+		
+		}
+
+	};
+	
+	var logError = function( message ) {
+
+		if ( window.console ) {
+
+			window.console.error( message );
+		
+		}
+
+	};
+	
+	$.fn.elastislide = function( options ) {
+
+		if ( typeof options === 'string' ) {
+			
+			var args = Array.prototype.slice.call( arguments, 1 );
+			
 			this.each(function() {
-				var instance = $.data( this, 'elastislide' );
-				if ( !instance ) {
+			
+				var self = $.data( this, 'elastislide' );
+			
+				if ( !self ) {
+
 					logError( "cannot call methods on elastislide prior to initialization; " +
 					"attempted to call method '" + options + "'" );
 					return;
+				
 				}
-				if ( !$.isFunction( instance[options] ) || options.charAt(0) === "_" ) {
-					logError( "no such method '" + options + "' for elastislide instance" );
+				
+				if ( !$.isFunction( self[options] ) || options.charAt(0) === "_" ) {
+
+					logError( "no such method '" + options + "' for elastislide self" );
 					return;
+				
 				}
-				instance[ options ].apply( instance, args );
+				
+				self[ options ].apply( self, args );
+			
 			});
+		
 		} 
 		else {
+		
 			this.each(function() {
-				var instance = $.data( this, 'elastislide' );
-				if ( !instance ) {
-					$.data( this, 'elastislide', new $.elastislide( options, this ) );
+				
+				var self = $.data( this, 'elastislide' );
+				
+				if ( self ) {
+
+					self._init();
+				
 				}
+				else {
+
+					self = $.data( this, 'elastislide', new $.Elastislide( options, this ) );
+				
+				}
+
 			});
+		
 		}
-		return this;
+		
+		return self;
+		
 	};
 	
-})( window, jQuery );
+} )( jQuery, window );

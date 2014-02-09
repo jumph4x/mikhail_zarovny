@@ -2,7 +2,7 @@
   <div class="rg-thumbs">
     <div class="elastislide-wrapper">
       <div class="elastislide-carousel elastislide-horizontal">
-        <ul class="">
+        <ul>
           <% @images.each do |image| %>
             <li>
               <%= link_to image_tag(image.upload.thumb.url, 'data-large' => image.upload.url, 'data-description' => image.title), '#' -%>
