@@ -11,11 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140209013926) do
+ActiveRecord::Schema.define(version: 20140209045432) do
 
   create_table "images", force: true do |t|
     t.string   "title"
-    t.integer  "year"
+    t.string   "year"
     t.string   "discipline"
     t.string   "subject_matter"
     t.string   "dimensions"

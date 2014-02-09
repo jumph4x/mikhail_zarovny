@@ -23,11 +23,11 @@
     .large-3.columns
       %label 
         Year
-        = f.select :year, YEARS
+        = f.select :year, YEAR
     .large-3.columns
       %label 
         Discipline
-        = f.select :discipline, DISCIPLINES
+        = f.select :discipline, DISCIPLINE
     .large-3.columns
       %label 
         Subject matter
@@ -62,6 +62,6 @@
 
   .row
     .large-6.columns
-      = link_to "&laquo; Back".html_safe, admin_images_path, class: 'button radius', onclick: 'history.back(); return false;'
+      = link_to "&laquo; Back".html_safe, admin_images_path, class: 'button radius', onclick: (flash ? '' : 'history.back(); return false;')
       = button_to "&times; Delete".html_safe, admin_images_path(method: :delete), class: 'button radius alert' unless @image.new_record?
       = f.submit value: "&check; Save".html_safe, class: 'button radius'

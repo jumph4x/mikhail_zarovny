@@ -1,8 +1,5 @@
-YEARS = (1980..Time.now.year).to_a.reverse
-YEARS_FILTER = YEARS.map{|x| [x, x]}.unshift(['All', nil])
+YEAR = ['Early-1979', '1980-1984', '1985-1989', '1990-1994', '1995-1999', '2000-2004', '2005-2009', '2010-Present']
 
 SUBJECT_MATTER = ['Portrait', 'Landscape', 'Mythology', 'Nature Morte']
-SUBJECT_MATTER_FILTER = SUBJECT_MATTER.map{|x| [x, x]}.unshift(['All', nil])
 
-DISCIPLINES = ['Oil painting', 'Acrylic painting', 'Engraving', 'Ink drawing']
-DISCIPLINES_FILTER = DISCIPLINES.map{|x| [x, x]}.unshift(['All', nil])
+DISCIPLINE = ['Oil painting', 'Acrylic painting', 'Engraving', 'Ink drawing']

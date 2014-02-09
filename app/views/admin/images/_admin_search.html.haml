@@ -4,15 +4,15 @@
       .large-3.columns
         %label
           Year
-          = f.select :year_eq, YEARS_FILTER
+          = f.select :year_eq, collection(YEAR, false)
       .large-3.columns
         %label
           Subject matter
-          = f.select :subject_matter_eq, SUBJECT_MATTER_FILTER
+          = f.select :subject_matter_eq, collection(SUBJECT_MATTER, false)
       .large-3.columns
         %label
           Technique
-          = f.select :discipline_eq, DISCIPLINES_FILTER
+          = f.select :discipline_eq, collection(DISCIPLINE, false)
 
       .large-3.columns
         = f.submit class: 'button radius'
