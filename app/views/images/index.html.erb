@@ -1,8 +1,8 @@
 <div id="rg-gallery" class="rg-gallery">
   <div class="rg-thumbs">
-    <div class="es-carousel-wrapper">
-      <div class="es-carousel">
-        <ul class="inline-list">
+    <div class="elastislide-wrapper">
+      <div class="elastislide-carousel elastislide-horizontal">
+        <ul class="">
           <% @images.each do |image| %>
             <li>
               <%= link_to image_tag(image.upload.thumb.url, 'data-large' => image.upload.url, 'data-description' => image.title), '#' -%>

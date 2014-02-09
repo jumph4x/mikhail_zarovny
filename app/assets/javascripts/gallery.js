@@ -50,9 +50,9 @@ $(function() {
 	// gallery container
 	var $rgGallery			= $('#rg-gallery'),
 	// carousel container
-	$esCarousel			= $rgGallery.find('div.es-carousel-wrapper'),
+	$esCarousel			= $rgGallery.find('.elastislide-wrapper'),
 	// the carousel items
-	$items				= $esCarousel.find('ul > li'),
+	$items				= $esCarousel.find('li'),
 	// total number of items
 	itemsCount			= $items.length;
 	
@@ -66,7 +66,7 @@ $(function() {
 			init			= function() {
 				
 				// (not necessary) preloading the images here...
-				$items.add('<img src="images/ajax-loader.gif"/><img src="images/black.png"/>').imagesLoaded( function() {
+				$items.add('<img src="images/ajax-loader.gif"/>').imagesLoaded( function() {
 					// add options
 					_addViewModes();
 					
@@ -88,7 +88,7 @@ $(function() {
 				// we are using the elastislide plugin:
 				// http://tympanus.net/codrops/2011/09/12/elastislide-responsive-carousel/
 				$esCarousel.show().elastislide({
-					imageW 	: 65,
+					imageW 	: 80,
 					onClick	: function( $item ) {
 						if( anim ) return false;
 						anim	= true;
