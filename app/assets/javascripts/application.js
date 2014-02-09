@@ -14,7 +14,7 @@
 //= require jquery_ujs
 //= require ./jquery-ui-1.10.4.custom
 // require foundation
-//= require ./color-thief
+//= require ./resemble
 //= require ./jquery.tmpl.min
 //= require ./jquery.easing.1.3
 //= require ./jquery.elastislide

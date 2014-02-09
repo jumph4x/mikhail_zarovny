@@ -225,15 +225,30 @@ $(function() {
 					anim	= false;
 				}).attr( 'src', largesrc );
 
-        var cf = new ColorThief();
-        var art = $(art)[0];
-        if(art != undefined){
-          var dc = cf.getColor(art);
-          var rgb = 'rgb(' + dc.join(',') + ')';
-          $("body").animate({
-            backgroundColor: rgb
-          }, 1000 );
-        }
+         resemble(largesrc).onComplete(function(d){
+           var rgb = 'rgb(' + d.red + ',' + d.green + ',' + d.blue + ')';
+           $("body").animate({
+             backgroundColor: rgb
+           }, 100 );
+
+           var t = $('a,p');
+
+           if(d.brightness > 128){
+             t.animate({color: '#000'}, 100);
+           }else{
+             t.animate({color: '#fff'}, 100);
+           }
+         });
+        //var cf = new ColorThief();
+        //var source = $(art)[0];
+        //console.log(source);
+        //if(source != undefined){
+        //  var dc = cf.getColor(source);
+        //  var rgb = 'rgb(' + dc.join(',') + ')';
+        //  $("body").animate({
+        //    backgroundColor: rgb
+        //  }, 100 );
+        //}
 			},
 			addItems		= function( $new ) {
 				$esCarousel.find('ul').append($new);
