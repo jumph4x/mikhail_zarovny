@@ -6,4 +6,5 @@ class Image < ActiveRecord::Base
   validates :discipline, presence: true
   validates :subject_matter, presence: true
   validates :upload, presence: true
+  validates :price, numericality: true, allow_blank: true
 end

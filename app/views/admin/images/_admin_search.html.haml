@@ -1,18 +1,18 @@
 .admin-search
   = search_form_for @q, url: admin_images_path do |f|
     .row
-      .large-4.columns
+      .large-3.columns
         %label
           Year
-          = f.select :year_eq, YEARS
-      .large-4.columns
+          = f.select :year_eq, YEARS_FILTER
+      .large-3.columns
         %label
           Subject matter
-          = f.select :subject_matter_eq, SUBJECT_MATTER
-      .large-4.columns
+          = f.select :subject_matter_eq, SUBJECT_MATTER_FILTER
+      .large-3.columns
         %label
           Technique
-          = f.select :discipline_eq, DISCIPLINES
+          = f.select :discipline_eq, DISCIPLINES_FILTER
 
-    = f.submit
-
+      .large-3.columns
+        = f.submit class: 'button radius'

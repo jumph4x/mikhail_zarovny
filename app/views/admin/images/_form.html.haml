@@ -1,13 +1,13 @@
-= form_for @image, url: admin_images_path, html: {multipart: true} do |f|
-  -if @image.errors.any?
-    #error_explanation
-      %h2
+= form_for @image, url: [:admin, @image], html: {multipart: true} do |f|
+  -if @image.errors.any? and false
+    .row
+      .large-6.large-offset-3.columns.error-explanation
         = pluralize(@image.errors.count, "error")
         prohibited this image from being saved:
 
-      %ul
-      - @image.errors.full_messages.each do |msg|
-        %li= msg
+        %ul
+          - @image.errors.full_messages.each do |msg|
+            %li= msg
 
   .row
     .large-9.columns
@@ -35,7 +35,7 @@
     .large-3.columns
       %label 
         Price [if for sale]
-        = f.number_field :price
+        = f.text_field :price
 
   .row
     .large-6.columns
@@ -53,14 +53,15 @@
         Upload
         = f.file_field :upload
     .large-6.columns
-      %label
-        Preview
-        %br
-        = image_tag(@image.upload.thumb.url) if @image.upload
-        = f.hidden_field :upload_cache
+      - if @image.upload
+        %label
+          Preview
+          %br
+          = image_tag(@image.upload.thumb.url)
+          = f.hidden_field :upload_cache
 
   .row
     .large-6.columns
       = link_to "&laquo; Back".html_safe, admin_images_path, class: 'button radius', onclick: 'history.back(); return false;'
-      = button_to "&times; Delete".html_safe, admin_images_path(method: :delete), class: 'button radius alert'
+      = button_to "&times; Delete".html_safe, admin_images_path(method: :delete), class: 'button radius alert' unless @image.new_record?
       = f.submit value: "&check; Save".html_safe, class: 'button radius'
