@@ -1,0 +1,65 @@
+= form_for @image, url: admin_images_path, html: {multipart: true} do |f|
+  -if @image.errors.any?
+    #error_explanation
+      %h2
+        = pluralize(@image.errors.count, "error")
+        prohibited this image from being saved:
+
+      %ul
+      - @image.errors.full_messages.each do |msg|
+        %li= msg
+
+  .row
+    .large-9.columns
+      %label 
+        Title
+        = f.text_field :title
+    .large-3.columns
+      %label 
+        Dimensions
+        = f.text_field :dimensions
+
+  .row
+    .large-3.columns
+      %label 
+        Year
+        = f.select :year, YEARS
+    .large-3.columns
+      %label 
+        Discipline
+        = f.select :discipline, DISCIPLINES
+    .large-3.columns
+      %label 
+        Subject matter
+        = f.select :subject_matter, SUBJECT_MATTER
+    .large-3.columns
+      %label 
+        Price [if for sale]
+        = f.number_field :price
+
+  .row
+    .large-6.columns
+      %label
+        Keywords
+        = f.text_area :keywords
+    .large-6.columns
+      %label
+        Description
+        = f.text_area :description
+
+  .row
+    .large-6.columns
+      %label
+        Upload
+        = f.file_field :upload
+    .large-6.columns
+      %label
+        Preview
+        %br
+        = image_tag(@image.upload.thumb.url) if @image.upload
+        = f.hidden_field :upload_cache
+
+  .row
+    .large-6.columns
+      = link_to 'Back', admin_images_path, class: 'button radius alert', onclick: 'history.back(); return false;'
+      = f.submit class: 'button radius'
