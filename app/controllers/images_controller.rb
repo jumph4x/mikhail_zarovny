@@ -22,6 +22,7 @@ class ImagesController < ApplicationController
       hash["#{k}_eq"] = collection_value(k, v)
     end
 
+    hash[:year_eq] = '2010-Present' if image_params.empty?
     hash
   end
 end
