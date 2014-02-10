@@ -66,7 +66,7 @@ $(function() {
 			init			= function() {
 				
 				// (not necessary) preloading the images here...
-				$items.add('<img src="images/ajax-loader.gif"/>').imagesLoaded( function() {
+				$items.add('<img />').imagesLoaded( function() {
 					// add options
 					_addViewModes();
 					
@@ -248,7 +248,8 @@ $(function() {
             }, 1000 );
 
             $('a,p,ul,label').animate({color: fg_rgb}, 1000)
-            $('.logo svg, .arrow svg').animate({fill: fg_rgb}, 1000)
+            $('.svg svg').animate({fill: fg_rgb}, 1000)
+            $('.borders').animate({borderColor: fg_rgb}, 1000)
           }
 				}).attr( 'src', largesrc );
 			},

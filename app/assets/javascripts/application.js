@@ -12,10 +12,9 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require ./jquery-ui-1.10.4.custom
+// require ./jquery-ui-1.10.4.custom
 //= require ./jquery.color
 // require foundation
-// require ./resemble
 //= require ./color-thief
 //= require ./jquery.tmpl.min
 //= require ./jquery.easing.1.3
@@ -23,3 +22,13 @@
 //= require ./gallery
 
 jQuery.Color.hook( "fill stroke" );
+
+$('.nav-reveal').on('click', function(){
+  $('.nav').slideDown();
+  return false;
+});
+
+$('.nav-close').on('click', function(){
+  $('.nav').slideUp();
+  return false;
+});
