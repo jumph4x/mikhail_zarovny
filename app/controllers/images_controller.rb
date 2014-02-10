@@ -1,6 +1,6 @@
 class ImagesController < ApplicationController
   before_filter :prime_params
-  helper_method :image_params
+  helper_method :image_params, :html_title
 
   # GET /images
   def index
@@ -10,6 +10,18 @@ class ImagesController < ApplicationController
 
   def image_params
     params.permit(:year, :discipline, :subject_matter)
+  end
+
+  def html_title
+    if collection_name.present? 
+      "#{collection_name} by Mikhail Zarovny"
+    else
+      "Mikhail Zarovny's Art"
+    end
+  end
+
+  def collection_name
+    [:subject_matter, :discipline, :year].map{|t| collection_value(t, params[t]) }.join(' ')
   end
 
   private
