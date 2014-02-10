@@ -17,3 +17,6 @@
 
 #uploads
 /public/uploads
+
+#ignore VIM swap
+*.swp

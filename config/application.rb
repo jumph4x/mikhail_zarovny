@@ -23,5 +23,6 @@ module MikhailZarovny
     ActionView::Base.field_error_proc = Proc.new { |html_tag, instance| "<div class=\"error\">#{html_tag}<small>Fix me</small></div>".html_safe }
     
     config.assets.precompile << 'vendor/modernizr.js'
+    config.autoload_paths += %W(#{config.root}/lib)
   end
 end

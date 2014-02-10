@@ -1,7 +1,7 @@
 class Image < ActiveRecord::Base
   mount_uploader :upload, ArtPieceUploader
 
-  default_scope order('id DESC')
+  default_scope { order('id DESC') }
 
   validates :title, presence: true
   validates :year, presence: true
