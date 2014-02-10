@@ -15,10 +15,10 @@ class ImagesController < ApplicationController
   private
 
   def prime_params
-    return if image_params.present?
-    params[:year] = '2010-Present'
-    params[:subject_matter] = 'Landscape'
-    params[:discipline] = 'Painting'
+    return unless image_params.empty?
+    params[:year] = '2010-present'
+    params[:subject_matter] = 'landscape'
+    params[:discipline] = 'painting'
   end
 
   def ransack_query

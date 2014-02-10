@@ -20,3 +20,6 @@
 
 #ignore VIM swap
 *.swp
+
+# ignore batch import art
+/art/**/*
