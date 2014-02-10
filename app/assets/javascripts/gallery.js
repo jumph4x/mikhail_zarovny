@@ -248,7 +248,7 @@ $(function() {
             }, 1000 );
 
             $('a,p,ul,label').animate({color: fg_rgb}, 1000)
-            $('.logo svg').animate({fill: fg_rgb}, 1000)
+            $('.logo svg, .arrow svg').animate({fill: fg_rgb}, 1000)
           }
 				}).attr( 'src', largesrc );
 			},
