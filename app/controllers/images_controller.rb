@@ -21,7 +21,10 @@ class ImagesController < ApplicationController
   end
 
   def collection_name
-    [:subject_matter, :discipline, :year].map{|t| collection_value(t, params[t]) }.join(' ')
+    [:subject_matter, :discipline, :year].
+      map{|t| params[t] && collection_value(t, params[t]) }.
+      compact.
+      join(' ')
   end
 
   private
