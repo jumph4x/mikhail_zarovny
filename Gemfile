@@ -8,6 +8,7 @@ gem 'foundation-rails'
 gem 'ransack'
 gem 'haml-rails'
 gem 'stringex'
+gem 'progressbar'
 
 group :development, :test do
   # Use sqlite3 as the database for Active Record
