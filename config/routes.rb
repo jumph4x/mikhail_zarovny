@@ -11,9 +11,20 @@ MikhailZarovny::Application.routes.draw do
   # You can have the root of your site routed with "root"
 
   root 'images#index'
-  get ':subject_matter/:year/:discipline' => 'images#index', :as => :images_all
-  get ':subject_matter/:year' => 'images#index', :as => :images_smy
-  get ':subject_matter' => 'images#index', :as => :images_sm
+  get ':subject_matter/:year/:discipline' => 'images#index',
+    :as => :images_all,
+    :subject_matter => /#{SUBJECT_MATTER.map(&:to_url).join('|')}/,
+    :year => /#{YEAR.map(&:to_url).join('|')}/,
+    :discipline => /#{DISCIPLINE.map(&:to_url).join('|')}/
+
+  get ':subject_matter/:year' => 'images#index',
+    :as => :images_smy,
+    :subject_matter => /#{SUBJECT_MATTER.map(&:to_url).join('|')}/,
+    :year => /#{YEAR.map(&:to_url).join('|')}/
+
+  get ':subject_matter' => 'images#index',
+    :as => :images_sm,
+    :subject_matter => /#{SUBJECT_MATTER.map(&:to_url).join('|')}/
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
