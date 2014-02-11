@@ -247,9 +247,9 @@ $(function() {
               backgroundColor: bg_rgb
             }, 1000 );
 
-            $('a,p,ul,label').animate({color: fg_rgb}, 1000)
-            $('.svg svg').animate({fill: fg_rgb}, 1000)
-            $('.borders').animate({borderColor: fg_rgb}, 1000)
+            $('a,ul,label').css({color: fg_rgb});
+            $('.svg svg').css({fill: fg_rgb});
+            $('.borders').css({borderColor: fg_rgb});
           }
 				}).attr( 'src', largesrc );
 			},
